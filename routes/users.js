@@ -1,33 +1,13 @@
 import { Router } from "express";
+import { UserController } from "../controllers/users.js";
 
-const usersRouter = Router();
+export const usersRouter = Router();
 
-usersRouter.post('/register', async (req, res) => {
-  const { email, password, name, username, rememberMe } = req.body;
-  let newUsername = ''
-  if(username === '') {
-    const nameArr = name.split(' ');
-    for(let  i = 0; i < nameArr.length; i++){
-      newUsername += nameArr[i];
-    }
-  } else {
-    newUsername = username;
-  }
+//Endpoint para registrar a un usuario
+usersRouter.post('/register', UserController.registerUser);
 
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: password,
-    options: {
-      data:{
-        fullName: name,
-        username: newUsername,
-        firstTime: true,
-        rememberMe: rememberMe
-      }
-    }
-  });
+//Endpoint para iniciar la sesion de un usuario
+usersRouter.post('/login', UserController.loginUser);
 
-  if (error) return res.status(400).json({ error: error.message });
-
-  return res.status(201).json({ message: 'Usuario registrado con éxito!' });
-})
+//Endpoint para obtener datos del usuario
+usersRouter.get('/getUser', UserController.getUser);
