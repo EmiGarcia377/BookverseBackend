@@ -11,7 +11,6 @@ export class UserController{
     static async loginUser(req, res){
         const user = req.body;
         const userLogin = await UserModel.loginUser(user);
-        console.log(userLogin.error);
         if(userLogin.error !== undefined) return res.status(400).json(userLogin);
         return res.status(200).json(userLogin);
     };
@@ -20,5 +19,12 @@ export class UserController{
         const userInfo = await UserModel.getUser();
         if(userInfo.error !== undefined) return res.status(400).json(userInfo);
         return res.status(200).json(userInfo);
+    }
+
+    static async getUserById(req, res){
+        const userId = req.params.userId;
+        const user = await UserModel.getUserById(userId);
+        if(user.error !== null) return res.status(400).json(user);
+        else if (user.data) return res.status(200).json(user);
     }
 }

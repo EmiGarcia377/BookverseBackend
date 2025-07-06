@@ -2,9 +2,9 @@ import { supabase } from '../supabaseClient.js';
 
 export class ReviewModel {
     static async getAllReviews(){
-        console.log('Datos recibidos /');
         const { data, error } = await supabase.from('reviews').select(`
             id,
+            user_id,
             title,
             score,
             content,
@@ -24,7 +24,6 @@ export class ReviewModel {
     }
 
     static async getReviewById(revId){
-        console.log('Datos recibidos /getReviewById/:reviewId');
         const { data, error } = await supabase.from('reviews').select(`
             id,
             title,
@@ -41,7 +40,6 @@ export class ReviewModel {
     }
 
     static async getReviewByUser(userId){
-        console.log('Datos recibidos /getUserReview/:userId');
         const { data, error } = await supabase.from('reviews').select(`
             id,
             title,
@@ -49,6 +47,7 @@ export class ReviewModel {
             content,
             created_at,
             users (
+            id,
             full_name,
             username
             )
@@ -63,7 +62,6 @@ export class ReviewModel {
     }
 
     static async createReview({ title, score, content }){
-        console.log('Datos recibidos /create');
         const numScore = parseInt(score);
         const user = await supabase.auth.getUser();
         const { data, error } = await supabase.from('reviews').insert([
@@ -79,7 +77,6 @@ export class ReviewModel {
     }
 
     static async editReview({ newTitle, newScore, newContent }, reviewId){
-        console.log('Datos recibidos /edit/:reviewId');
         const user = await supabase.auth.getUser();
         const { error } = await supabase.from('reviews').update({
             user_id: user.data.user.id,
@@ -98,7 +95,6 @@ export class ReviewModel {
     }
 
     static async deleteReview(reviewId){
-        console.log('Datos recibidos /delete/:reviewId');
         const user = await supabase.auth.getUser();
 
         const { response, error } = await supabase.from('reviews').delete().eq('id', reviewId).eq('user_id', user.data.user.id);

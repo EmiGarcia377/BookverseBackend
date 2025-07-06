@@ -11,3 +11,6 @@ usersRouter.post('/login', UserController.loginUser);
 
 //Endpoint para obtener datos del usuario
 usersRouter.get('/getUser', UserController.getUser);
+
+//Endpoint para obtener datos de un usuario por su id
+usersRouter.get('/getUser/:userId', UserController.getUserById);

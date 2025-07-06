@@ -2,7 +2,6 @@ import { supabase } from '../supabaseClient.js';
 
 export class UserModel {
     static async registerUser({ email, password, name, username, rememberMe }){
-        console.log('Datos recibidos /register');
         let newUsername = '';
         if (username === '') {
             const nameArr = name.split(' ');
@@ -31,7 +30,6 @@ export class UserModel {
     }
 
     static async loginUser({ email, password }){
-        console.log('Datos recibidos /login');
         const { data, error } = await supabase.auth.signInWithPassword({
             email: email,
             password: password
@@ -54,19 +52,37 @@ export class UserModel {
     }
 
     static async getUser(){
-        console.log('Datos recibidos /getUser');
-        const data = await supabase.from('users').select();
         const userId = await supabase.auth.getUser();
-
-        if(data.data.length === 0 || userId.data.user === null) return { message: "Inicia sesion para acceder!" };
-
-        const userInfo = data.data.filter((user) => user.id === userId.data.user.id);
+        if(userId.error) return { message: "Inicia sesion!", error: userId.error.message };
+        const user = await supabase.from('users').select(`
+            id, 
+            username, 
+            full_name,
+            followers,
+            following
+        `).eq('id', userId.data.user.id).single();
 
         return {
             message: 'Usuario obtenido',
-            userId: userInfo[0].id,
-            username: userInfo[0].username,
-            fullName: userInfo[0].full_name
+            userId: user.data.id,
+            username: user.data.username,
+            fullName: user.data.full_name,
+            followers: user.data.followers,
+            following: user.data.following
         }
+    }
+
+    static async getUserById(userId){
+        const user = await supabase.from('users').select(`
+            id,
+            username,
+            full_name,
+            followers,
+            following
+        `).eq('id', userId).single();
+        
+        if(user.error !== null) return { message: "No se encontro el usuario", error: user.error };
+
+        return user
     }
 }
