@@ -27,4 +27,10 @@ export class UserController{
         if(user.error !== null) return res.status(400).json(user);
         else if (user.data) return res.status(200).json(user);
     }
+
+    static async getUserId(req, res){
+        const id = await UserModel.getUserId();
+        if(!id.id) return res.status(400).json(id);
+        return res.status(200).json(id); 
+    }
 }

@@ -2,9 +2,10 @@ import { ReviewModel } from "../models/review.js";
 
 export class ReviewController{
     static async getAllReviews(req, res){
-      const reviews = await ReviewModel.getAllReviews();
-      if(reviews.error !== undefined) return res.status(400).json(reviews);
-      return res.status(200).json(reviews);
+        const userId = req.params.userId;
+        const reviews = await ReviewModel.getAllReviews(userId);
+        if(reviews.error !== undefined) return res.status(400).json(reviews);
+        return res.status(200).json(reviews);
     };
 
     static async getReviewById(req, res){

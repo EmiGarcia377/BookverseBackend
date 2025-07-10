@@ -1,26 +1,16 @@
 import { supabase } from '../supabaseClient.js';
 
 export class ReviewModel {
-    static async getAllReviews(){
-        const { data, error } = await supabase.from('reviews').select(`
-            id,
-            user_id,
-            title,
-            score,
-            content,
-            created_at,
-            users (
-            full_name,
-            username
-            )
-        `).order('created_at', { ascending: false });
-
-        if (error) return { message: "Ocurrio un error al cargar las reseñas", error: error.message };
-
-        return { 
-            message: 'reseñas obtenidas',
-            reviews: data 
-        };
+    static async getAllReviews(userId){
+        if(userId === 'null'){
+            const { data, error } = await supabase.rpc('get_reviews_public');
+            if(error) return { message: "Ocurrio un error al cargar las reseñas", error: error.message }
+            return { message: "No se encontro el id del usuario", reviews: data }
+        } else if(userId !== 'null') {
+            const { data, error } = await supabase.rpc('get_reviews', { current_user_id: userId });
+            if (error) return { message: "Ocurrio un error al cargar las reseñas", error: error.message };
+            return { message: 'reseñas obtenidas', reviews: data };
+        }
     }
 
     static async getReviewById(revId){
@@ -28,8 +18,13 @@ export class ReviewModel {
             id,
             title,
             score,
-            content`
-        ).eq('id', revId).single();
+            content,
+            users (
+                id,
+                full_name,
+                username
+            )
+        `).eq('id', revId).single();
 
         if(error) return { message: "No se encontro la reseña con su Id", error: error.message };
 
@@ -47,9 +42,9 @@ export class ReviewModel {
             content,
             created_at,
             users (
-            id,
-            full_name,
-            username
+                id,
+                full_name,
+                username
             )
         `).eq('user_id', userId).order('created_at', { ascending: false });
 

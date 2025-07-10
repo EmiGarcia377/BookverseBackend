@@ -85,4 +85,12 @@ export class UserModel {
 
         return user
     }
+
+    static async getUserId(){
+        const user = await supabase.auth.getUser();
+
+        if(user.error !== null) return { message: "No se encontro el usuario, vuelve a intentarlo o inicia sesion.", error: user.error };
+
+        return { id: user.data.user.id };
+    }
 }

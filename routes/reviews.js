@@ -4,7 +4,7 @@ import { ReviewController } from "../controllers/reviews.js";
 export const reviewsRouter = Router();
 
 //Endpoint para obtener todas las reseñas
-reviewsRouter.get('/', ReviewController.getAllReviews);
+reviewsRouter.get('/:userId', ReviewController.getAllReviews);
 
 //Endpoint para obtener una reseña por su id
 reviewsRouter.get('/getReviewById/:reviewId', ReviewController.getReviewById);
