@@ -9,15 +9,15 @@ export class ReviewController{
     };
 
     static async getReviewById(req, res){
-        const revId = req.params.reviewId;
-        const review = await ReviewModel.getReviewById(revId);
+        const data = req.params;
+        const review = await ReviewModel.getReviewById(data);
         if(review.error !== undefined) return res.status(400).json(review);
         return res.status(200).json(review);
     };
 
     static async getUserReview(req, res){
-        const id = req.params.userId;
-        const userReviews = await ReviewModel.getReviewByUser(id);
+        const data = req.params;
+        const userReviews = await ReviewModel.getReviewByUser(data);
         if(userReviews.error !== undefined) return res.status(400).json(userReviews);
         return res.status(200).json(userReviews);
     };
@@ -42,5 +42,19 @@ export class ReviewController{
         const reviewData = await ReviewModel.deleteReview(revId);
         if(reviewData.error !== undefined) return res.status(400).json(reviewData);
         return res.status(200).json(reviewData);
+    };
+
+    static async likeReview(req, res){
+        const data = req.body;
+        const like = await ReviewModel.likeReview(data);
+        if(like.error !== undefined) return res.status(400).json(like);
+        return res.status(201).json(like);
+    };
+
+    static async unlikeReview(req, res){
+        const data = req.body;
+        const unlike = await ReviewModel.unlikeReview(data);
+        if(unlike.error !== undefined) return res.status(500).json(unlike);
+        return res.status(200).json(unlike);
     }
 }

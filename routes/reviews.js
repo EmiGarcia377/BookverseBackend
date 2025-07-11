@@ -7,10 +7,10 @@ export const reviewsRouter = Router();
 reviewsRouter.get('/:userId', ReviewController.getAllReviews);
 
 //Endpoint para obtener una reseña por su id
-reviewsRouter.get('/getReviewById/:reviewId', ReviewController.getReviewById);
+reviewsRouter.get('/getReviewById/:reviewId/:userId', ReviewController.getReviewById);
 
 //Endpoint para obtener las reseñas de un usuario
-reviewsRouter.get('/getUserReview/:userId', ReviewController.getUserReview);
+reviewsRouter.get('/getUserReviews/:profileId/:userId', ReviewController.getUserReview);
 
 //Endpoint para crear una reseña
 reviewsRouter.post('/create', ReviewController.createReview);
@@ -20,3 +20,9 @@ reviewsRouter.put('/edit/:reviewId', ReviewController.editReview);
 
 //Endpoint para eliminar una reseña
 reviewsRouter.delete('/delete/:reviewId', ReviewController.deleteReview);
+
+//Endpoint para dar like a una reseña
+reviewsRouter.post('/like/:userId', ReviewController.likeReview);
+
+//Endpoint para dislikear una reseña
+reviewsRouter.delete('/unlike/:reviewId', ReviewController.unlikeReview);
