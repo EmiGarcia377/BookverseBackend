@@ -56,5 +56,19 @@ export class ReviewController{
         const unlike = await ReviewModel.unlikeReview(data);
         if(unlike.error !== undefined) return res.status(500).json(unlike);
         return res.status(200).json(unlike);
-    }
+    };
+
+    static async commentReview(req, res){
+        const data = req.body;
+        const commentRes = await ReviewModel.commentReview(data);
+        if(commentRes.error !== undefined) return res.status(500).json(commentRes);
+        return res.status(201).json(commentRes);
+    };
+
+    static async getReviewsComments(req, res){
+        const reviewId = req.params.reviewId;
+        const comments = await ReviewModel.getReviewsComments(reviewId);
+        if(comments.error !== undefined) return res.status(500).json(comments);
+        return res.status(201).json(comments);
+    };
 }

@@ -52,6 +52,22 @@ export class ReviewModel {
         };
     }
 
+    static async commentReview({ userId, reviewId, comment }){
+        const { data, error } = await supabase.from('comments').insert({ user_id: userId, review_id: reviewId, content: comment });
+
+        if(error) return { message: "Ocurrio un error al crear el comentario, vuelve a intentar por favor", error: error.message };
+
+        return { message: "Comentario creado con exito!" };
+    }
+
+    static async getReviewsComments(reviewId){
+        const { data, error } = await supabase.rpc('get_comments_by_review_id', { review_id_input: reviewId });
+
+        if(error) return { message: "Ocurrio un error al cargar los comentarios, vuelve a intentar por favor", error: error.message };
+
+        return { message: "Comentarios obtenidos con exito!", comments: data };
+    }
+
     static async editReview({ newTitle, newScore, newContent }, reviewId){
         const user = await supabase.auth.getUser();
         const { error } = await supabase.from('reviews').update({

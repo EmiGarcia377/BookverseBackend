@@ -26,3 +26,9 @@ reviewsRouter.post('/like/:userId', ReviewController.likeReview);
 
 //Endpoint para dislikear una reseña
 reviewsRouter.delete('/unlike/:reviewId', ReviewController.unlikeReview);
+
+//Endpoint para comentar una reseña
+reviewsRouter.post('/comment', ReviewController.commentReview);
+
+//Endpoint para poder obtener todos los comentarios de una reseña por su id
+reviewsRouter.get('/comment/:reviewId', ReviewController.getReviewsComments);
