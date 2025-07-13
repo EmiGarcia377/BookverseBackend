@@ -54,10 +54,28 @@ export class ReviewModel {
 
     static async commentReview({ userId, reviewId, comment }){
         const { data, error } = await supabase.from('comments').insert({ user_id: userId, review_id: reviewId, content: comment });
+        const { count, countErr } = await supabase.from('comments').select('*', { count: 'exact', head: true}).eq('review_id', reviewId); 
 
-        if(error) return { message: "Ocurrio un error al crear el comentario, vuelve a intentar por favor", error: error.message };
+        if(error || countErr) return { message: "Ocurrio un error al crear el comentario, vuelve a intentar por favor", error: error.message, countErr: countErr };
 
-        return { message: "Comentario creado con exito!" };
+        return { message: "Comentario creado con exito!", count: count };
+    }
+
+    static async editComment({ userId, commentId, comment }){
+        const { data, error } = await supabase.from('comments').update({ user_id: userId, content: comment}).eq('id', commentId).eq('user_id', userId);
+       
+        if(error) return { message: "Ocurrio un error al actualizar el comentario, vuelve a intentarlo mas tarde", error: error.message };
+
+        return { message: "Comentario actualizado con exito!"};
+    }
+
+    static async deleteComment({ userId, commentId, reviewId }){
+        const response = await supabase.from('comments').delete().eq('user_id', userId).eq('id', commentId);
+        const { count, countErr } = await supabase.from('comments').select('*', { count: 'exact', head: true}).eq('review_id', reviewId); 
+        
+        if(response?.status !== 204 || countErr) return { message: "Ocurrio un error al eliminar el comentario, vuelve a intentarlo mas tarde", error: response, countErr: countErr };
+
+        return { message: "Comentario eliminado con exito!", count: count};
     }
 
     static async getReviewsComments(reviewId){

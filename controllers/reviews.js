@@ -34,7 +34,7 @@ export class ReviewController{
         const newReview = req.body;
         const reviewData = await ReviewModel.editReview(newReview, id);
         if(reviewData.error !== undefined) return res.status(400).json(reviewData);
-        return res.status(200).json(reviewData);
+        return res.status(204).json(reviewData);
     };
 
     static async deleteReview(req, res){
@@ -64,6 +64,20 @@ export class ReviewController{
         if(commentRes.error !== undefined) return res.status(500).json(commentRes);
         return res.status(201).json(commentRes);
     };
+
+    static async editComment(req, res){
+        const data = req.body;
+        const editCommentRes = await ReviewModel.editComment(data);
+        if(editCommentRes.error !== undefined) return res.status(500).json(editCommentRes);
+        return res.status(204).json(editCommentRes);
+    };
+
+    static async deleteComment(req, res){
+        const data = req.body;
+        const delCommentRes = await ReviewModel.deleteComment(data);
+        if(delCommentRes.error !== undefined) return res.status(500).json(delCommentRes);
+        return res.status(200).json(delCommentRes);
+    }
 
     static async getReviewsComments(req, res){
         const reviewId = req.params.reviewId;

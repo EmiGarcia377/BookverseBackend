@@ -30,5 +30,11 @@ reviewsRouter.delete('/unlike/:reviewId', ReviewController.unlikeReview);
 //Endpoint para comentar una reseña
 reviewsRouter.post('/comment', ReviewController.commentReview);
 
+//Endpoint para editar un comentario de una reseña
+reviewsRouter.patch('/editComment', ReviewController.editComment);
+
+//Endpoint para eliminar un comentario de una reseña
+reviewsRouter.delete('/delComment', ReviewController.deleteComment);
+
 //Endpoint para poder obtener todos los comentarios de una reseña por su id
 reviewsRouter.get('/comment/:reviewId', ReviewController.getReviewsComments);
