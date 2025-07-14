@@ -12,6 +12,9 @@ reviewsRouter.get('/getReviewById/:reviewId/:userId', ReviewController.getReview
 //Endpoint para obtener las reseñas de un usuario
 reviewsRouter.get('/getUserReviews/:profileId/:userId', ReviewController.getUserReview);
 
+//Endpoint para obtener las reseñas guardadas por un usuario
+reviewsRouter.get('/getSavedReviews/:userId', ReviewController.getSavedReviews);
+
 //Endpoint para crear una reseña
 reviewsRouter.post('/create', ReviewController.createReview);
 
@@ -26,6 +29,12 @@ reviewsRouter.post('/like/:userId', ReviewController.likeReview);
 
 //Endpoint para dislikear una reseña
 reviewsRouter.delete('/unlike/:reviewId', ReviewController.unlikeReview);
+
+//Endpoint para guardar una reseña
+reviewsRouter.post('/save', ReviewController.saveReview);
+
+//Endpoint para desguardar una reseña
+reviewsRouter.delete('/unsave', ReviewController.unsaveReview);
 
 //Endpoint para comentar una reseña
 reviewsRouter.post('/comment', ReviewController.commentReview);

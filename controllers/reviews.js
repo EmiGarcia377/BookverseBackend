@@ -22,6 +22,13 @@ export class ReviewController{
         return res.status(200).json(userReviews);
     };
 
+    static async getSavedReviews(req, res){
+        const userId = req.params.userId;
+        const savedReviews = await ReviewModel.getSavedReviews(userId);
+        if(savedReviews.error !== undefined) return res.status(500).json(savedReviews);
+        return res.status(200).json(savedReviews);
+    }
+
     static async createReview(req, res){
         const review = req.body;
         const data = ReviewModel.createReview(review);
@@ -57,6 +64,20 @@ export class ReviewController{
         if(unlike.error !== undefined) return res.status(500).json(unlike);
         return res.status(200).json(unlike);
     };
+
+    static async saveReview(req, res){
+        const data = req.body;
+        const save = await ReviewModel.saveReview(data);
+        if(save.error !== undefined) return res.status(500).json(save);
+        return res.status(200).json(save);
+    };
+
+    static async unsaveReview(req, res){
+        const data = req.body;
+        const unsave = await ReviewModel.unsaveReview(data);
+        if(unsave.error !== undefined) return res.status(500).json(unsave);
+        return res.status(200).json(unsave);
+    }
 
     static async commentReview(req, res){
         const data = req.body;

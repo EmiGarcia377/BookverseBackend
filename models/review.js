@@ -37,6 +37,14 @@ export class ReviewModel {
         }
     }
 
+    static async getSavedReviews(userId){
+        const { data, error } = await supabase.rpc('get_saved_reviews_by_user', { current_user_id: userId });
+
+        if(error) return { message: 'Ocurrio un error al buscar las reseñas guardadas, por favor intente de nuevo mas tarde', error: error.message };
+
+        return { message: 'Reseñas guardadas obtenidas con exito!', reviews: data };
+    }
+
     static async createReview({ title, score, content }){
         const numScore = parseInt(score);
         const user = await supabase.auth.getUser();
@@ -137,5 +145,27 @@ export class ReviewModel {
         if (error || countErr) return { message: 'Error al quitar like', error: error.message };
 
         return { message: 'Like eliminado correctamente', count: count };
+    }
+
+    static async saveReview({ userId, reviewId }){
+        if(!userId) return { message: "Inicia sesion para poder hacer esta accion!", error: "Usuario no registrado" };
+
+        const { data, error } = await supabase.from('saved_reviews').insert({ user_id: userId, review_id: reviewId });
+        const { count, countErr } = await supabase.from('saved_reviews').select('*', { count: 'exact', head: true }).eq('review_id', reviewId);
+
+        if(error || countErr) return { message: 'Error al guardar la reseña', error: error.message, countErr: countErr.message};
+
+        return { message: 'Reseña guardada con exito', count: count };
+    }
+
+    static async unsaveReview({ userId, reviewId }){
+        if(!userId) return { message: "Inicia sesion para poder hacer esta accion!", error: "Usuario no registrado" };
+
+        const { data, error } = await supabase.from('saved_reviews').delete().match({ user_id: userId, review_id: reviewId });
+        const { count, countErr } = await supabase.from('saved_reviews').select('*', { count: 'exact', head: true }).eq('review_id', reviewId);
+
+        if(error || countErr) return { message: 'Error al guardar la reseña', error: error.message, countErr: countErr.message};
+
+        return { message: 'Reseña desguardada con exito', count: count };
     }
 }
