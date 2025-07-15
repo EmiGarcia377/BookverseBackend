@@ -41,13 +41,55 @@ export class UserModel {
             await supabase.from('users').insert([
             { id: data.user.id, email: data.user.email, username: data.user.user_metadata.username, full_name: data.user.user_metadata.fullName }
             ]);
-            data.user.user_metadata.firstTime = false;
         }
         return {
             message: 'Sesion iniciada con exito!',
             rememberMe: data.user.user_metadata.rememberMe,
             access_token: data.session.access_token,
             userId: data.user.id
+        }
+    }
+
+    static async updateUserInfo({ email, fullName, username, biography, }, userId){
+        const user = await supabase.auth.getUser();
+        if(user.data.user.email !== email){
+            const { authData, error } = await supabase.auth.updateUser({
+                email: email,
+                data: {
+                    fullName: fullName,
+                    username: username,
+                    firstTime: false
+                }
+            });
+            if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            const { data, dbError } = await supabase.from('users').update({
+                id: userId,
+                full_name: fullName,
+                username: username,
+                email: email,
+                biography: biography
+            }).eq('id', userId).select();
+            if(dbError) return { message: 'Ocurrio un error al actualizar su usuario', error: dbError.message };
+            return data;
+        } else {
+            const { authData, error } = await supabase.auth.updateUser({
+                data: {
+                    fullName: fullName,
+                    username: username,
+                    firstTime: false
+                }
+            });
+            if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            const { data, dbError } = await supabase.from('users').update({
+                id: userId,
+                full_name: fullName,
+                username: username,
+                email: email,
+                biography: biography
+            }).eq('id', userId).select();
+            console.log(data);
+            if(dbError) return { message: 'Ocurrio un error al actualizar su usuario', error: dbError.message };
+            return data;
         }
     }
 
@@ -59,16 +101,19 @@ export class UserModel {
             username, 
             full_name,
             followers,
-            following
+            following,
+            biography
         `).eq('id', userId.data.user.id).single();
 
         return {
             message: 'Usuario obtenido',
             userId: user.data.id,
             username: user.data.username,
+            email: userId.data.user.email,
             fullName: user.data.full_name,
             followers: user.data.followers,
-            following: user.data.following
+            following: user.data.following,
+            biography: user.data.biography
         }
     }
 
@@ -78,7 +123,8 @@ export class UserModel {
             username,
             full_name,
             followers,
-            following
+            following,
+            biography
         `).eq('id', userId).single();
         
         if(user.error !== null) return { message: "No se encontro el usuario", error: user.error };
