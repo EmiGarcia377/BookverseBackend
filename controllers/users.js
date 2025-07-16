@@ -5,7 +5,7 @@ export class UserController{
         const user = req.body;
         const newUser = await UserModel.registerUser(user);
         if(newUser !== undefined) return res.status(500).json(newUser);
-        return res.status(201).json({ message: 'Usuario registrado con éxito!' });
+        return res.status(201).json(newUser);
     };
 
     static async loginUser(req, res){
@@ -22,6 +22,15 @@ export class UserController{
         if(updatedUser.error !== undefined) return res.status(500).json(updatedUser);
         return res.status(200).json(updatedUser);
     };
+
+    static async updatePfp(req, res){
+        const userId = req.params.userId;
+        const file = req.file;
+        if (!file) return res.status(400).json({ message: 'No se proporcionó ninguna imagen.' });
+        const result = await UserModel.updatePfp(file, userId);
+        if(result.error != undefined) return res.status(500).json(result);
+        return res.status(201).json(result);
+    }
 
     static async getUser(req, res){
         const userInfo = await UserModel.getUser();

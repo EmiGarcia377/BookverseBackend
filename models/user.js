@@ -1,3 +1,4 @@
+import path from 'path';
 import { supabase } from '../supabaseClient.js';
 
 export class UserModel {
@@ -50,18 +51,31 @@ export class UserModel {
         }
     }
 
-    static async updateUserInfo({ email, fullName, username, biography, }, userId){
+    static async updateUserInfo({ email, fullName, username, biography, password }, userId){
         const user = await supabase.auth.getUser();
         if(user.data.user.email !== email){
-            const { authData, error } = await supabase.auth.updateUser({
-                email: email,
-                data: {
-                    fullName: fullName,
-                    username: username,
-                    firstTime: false
-                }
-            });
-            if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            if(password !== ''){
+                const { authData, error } = await supabase.auth.updateUser({
+                    email: email,
+                    password: password,
+                    data: {
+                        fullName: fullName,
+                        username: username,
+                        firstTime: false
+                    }
+                });
+                if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            } else{
+                const { authData, error } = await supabase.auth.updateUser({
+                    email: email,
+                    data: {
+                        fullName: fullName,
+                        username: username,
+                        firstTime: false
+                    }
+                });
+                if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            }
             const { data, dbError } = await supabase.from('users').update({
                 id: userId,
                 full_name: fullName,
@@ -72,14 +86,26 @@ export class UserModel {
             if(dbError) return { message: 'Ocurrio un error al actualizar su usuario', error: dbError.message };
             return data;
         } else {
-            const { authData, error } = await supabase.auth.updateUser({
-                data: {
-                    fullName: fullName,
-                    username: username,
-                    firstTime: false
-                }
-            });
-            if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            if(password !== ''){
+                const { authData, error } = await supabase.auth.updateUser({
+                    password: password,
+                    data: {
+                        fullName: fullName,
+                        username: username,
+                        firstTime: false
+                    }
+                });
+                if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            } else{
+                const { authData, error } = await supabase.auth.updateUser({
+                    data: {
+                        fullName: fullName,
+                        username: username,
+                        firstTime: false
+                    }
+                });
+                if(error) return { message: 'Ocurrio un error al actualizar su usuario', error: error.message };
+            }
             const { data, dbError } = await supabase.from('users').update({
                 id: userId,
                 full_name: fullName,
@@ -87,10 +113,29 @@ export class UserModel {
                 email: email,
                 biography: biography
             }).eq('id', userId).select();
-            console.log(data);
             if(dbError) return { message: 'Ocurrio un error al actualizar su usuario', error: dbError.message };
             return data;
         }
+    }
+
+    static async updatePfp(file, userId){
+        const fileExt = path.extname(file.originalname);
+        const filename = `${userId}${fileExt}`;
+        const filePath = `avatars/${userId}/${filename}`;
+        const { error } = await supabase.storage.from('avatars').upload(filePath, file.buffer, {
+            contentType: file.mimetype,
+            upsert: true
+        });
+
+        if(error) return { message: "Ocurrio un error al subir la imagen", error: error.message };
+
+        const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(filePath);
+
+        const { dbError } = await supabase.from('users').update({ profilepic_url: publicUrlData.publicUrl }).eq('id', userId);
+
+        if(dbError) return { message: "Ocurrio un error al guardar la imagen", error: error.message };
+
+        return publicUrlData.publicUrl;
     }
 
     static async getUser(){
@@ -102,7 +147,8 @@ export class UserModel {
             full_name,
             followers,
             following,
-            biography
+            biography,
+            profilepic_url
         `).eq('id', userId.data.user.id).single();
 
         return {
@@ -113,7 +159,8 @@ export class UserModel {
             fullName: user.data.full_name,
             followers: user.data.followers,
             following: user.data.following,
-            biography: user.data.biography
+            biography: user.data.biography,
+            profilePic: user.data.profilepic_url
         }
     }
 
@@ -124,7 +171,8 @@ export class UserModel {
             full_name,
             followers,
             following,
-            biography
+            biography,
+            profilepic_url
         `).eq('id', userId).single();
         
         if(user.error !== null) return { message: "No se encontro el usuario", error: user.error };
