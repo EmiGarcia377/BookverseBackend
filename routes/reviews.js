@@ -47,3 +47,6 @@ reviewsRouter.delete('/delComment', ReviewController.deleteComment);
 
 //Endpoint para poder obtener todos los comentarios de una reseña por su id
 reviewsRouter.get('/comment/:reviewId', ReviewController.getReviewsComments);
+
+//Endpoint para obtener los datos de las reseñas para la pagina user-dash
+reviewsRouter.get('/getUserDashboard/:userId', ReviewController.getUserDashboard);

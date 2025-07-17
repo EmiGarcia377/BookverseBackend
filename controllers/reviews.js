@@ -27,6 +27,13 @@ export class ReviewController{
         const savedReviews = await ReviewModel.getSavedReviews(userId);
         if(savedReviews.error !== undefined) return res.status(500).json(savedReviews);
         return res.status(200).json(savedReviews);
+    };
+
+    static async getUserDashboard(req, res){
+        const userId = req.params.userId;
+        const userDashboard = await ReviewModel.getUserDashboard(userId);
+        if(userDashboard.error !== undefined) return res.status(500).json(userDashboard);
+        return res.status(200).json(userDashboard);
     }
 
     static async createReview(req, res){

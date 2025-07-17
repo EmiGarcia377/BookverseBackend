@@ -45,6 +45,15 @@ export class ReviewModel {
         return { message: 'Reseñas guardadas obtenidas con exito!', reviews: data };
     }
 
+    static async getUserDashboard(userId){
+        const { data: savedData, error: savedError } = await supabase.rpc('get_recent_saved_reviews', { current_user_id: userId });
+        const { data, error } = await supabase.rpc('get_recent_reviews_by_current_user',  { current_user_id: userId });
+        
+        if(error || savedError) return { message: 'Ocurrio un error al encontrar las reseñas guardadas recientemente', savedError: savedError.message, recentError: error.message };
+
+        return { message: 'Reseñas del dashboard obtenidas con exito!', recentSavedReviews: savedData, recentUserReviews: data };
+    }
+
     static async createReview({ title, score, content }){
         const numScore = parseInt(score);
         const user = await supabase.auth.getUser();
