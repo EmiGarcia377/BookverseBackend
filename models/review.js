@@ -5,11 +5,11 @@ export class ReviewModel {
         if(userId === 'null'){
             const { data, error } = await supabase.rpc('get_reviews_public');
             if(error) return { message: "Ocurrio un error al cargar las reseñas", error: error.message }
-            return { message: "No se encontro el id del usuario", reviews: data }
+            return { reviews: data }
         } else if(userId !== 'null') {
             const { data, error } = await supabase.rpc('get_reviews', { current_user_id: userId });
             if (error) return { message: "Ocurrio un error al cargar las reseñas", error: error.message };
-            return { message: 'reseñas obtenidas', reviews: data };
+            return { reviews: data };
         }
     }
 
@@ -17,11 +17,11 @@ export class ReviewModel {
         if(!userId || userId === 'null'){
             const { data, error } = await supabase.rpc('get_review_by_id_public', { review_id_input: reviewId }).single();
             if(error) return { message: "No se encontro la reseña con su Id", error: error.message };
-            return { message: "No se encontro el id del usuario, inicie sesion o registrese", review: data };
+            return { reviews: data };
         } else if(userId !== 'null'){
             const { data, error } = await supabase.rpc('get_review_by_id', { review_id_input: reviewId, current_user_id: userId }).single();
             if(error) return { message: "Ocurrio un error al cargar la reseña", error: error.message };
-            return { message: "Reseña encontrada con exito", review: data };
+            return { reviews: data };
         }
     }
 
@@ -29,11 +29,11 @@ export class ReviewModel {
         if(!userId || userId === 'undefined' || userId === 'null'){
             const { data, error } = await supabase.rpc('get_reviews_by_user_public', { target_user_id: profileId });
             if(error) return { message: "Ocurrio un error al buscar las reseñas de este usuario", error: error.message };
-            return { message: "No se encontro el id del usuario, inicie sesion o registrese", reviews: data };
+            return { reviews: data };
         } else if(userId !== 'null'){
             const { data, error } = await supabase.rpc('get_reviews_by_user', { target_user_id: profileId, current_user_id: userId });
             if(error) return { message: "Ocurrio un error al buscar las reseñas de este usuario", error: error.message };
-            return { message: "Reseña encontrada con exito", reviews: data };
+            return { reviews: data };
         }
     }
 
@@ -42,7 +42,7 @@ export class ReviewModel {
 
         if(error) return { message: 'Ocurrio un error al buscar las reseñas guardadas, por favor intente de nuevo mas tarde', error: error.message };
 
-        return { message: 'Reseñas guardadas obtenidas con exito!', reviews: data };
+        return { reviews: data };
     }
 
     static async getUserDashboard(userId){
@@ -51,7 +51,7 @@ export class ReviewModel {
         
         if(error || savedError) return { message: 'Ocurrio un error al encontrar las reseñas guardadas recientemente', savedError: savedError.message, recentError: error.message };
 
-        return { message: 'Reseñas del dashboard obtenidas con exito!', recentSavedReviews: savedData, recentUserReviews: data };
+        return { recentSavedReviews: savedData, recentUserReviews: data };
     }
 
     static async createReview({ title, score, content }){
@@ -63,10 +63,7 @@ export class ReviewModel {
 
         if (error) return { message: 'Ocurrio un error al crear la reseña', error: error.message };
 
-        return {
-            message: 'Reseña creada con exito!',
-            userId: user.data.user.id
-        };
+        return { userId: user.data.user.id };
     }
 
     static async commentReview({ userId, reviewId, comment }){
@@ -115,10 +112,7 @@ export class ReviewModel {
 
         if(error) return { message: "Ocurrio un error al editar la reseña", error: error.message };
 
-        return {
-            message: 'Reseña editada con éxito!',
-            reviewId: reviewId
-        };
+        return { reviewId: reviewId };
     }
 
     static async deleteReview(reviewId){
