@@ -10,6 +10,9 @@ usersRouter.post('/register', UserController.registerUser);
 //Endpoint para iniciar la sesion de un usuario
 usersRouter.post('/login', UserController.loginUser);
 
+//Endpoint para cerrar la sesion de un usuario
+usersRouter.post('/logout', UserController.logoutUser);
+
 //Endpoint para actualizar los datos de un usuario
 usersRouter.put('/updateUser/:userId', UserController.updateUserInfo);
 

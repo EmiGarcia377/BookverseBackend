@@ -51,6 +51,14 @@ export class UserModel {
         }
     }
 
+    static async logoutUser(){
+        const { error } = await supabase.auth.signOut();
+        
+        if(error) return { message: "Ocurrio un error al cerrar sesion. Por favor intente de nuevo", error: error.message };
+
+        return { message: "Cierre de sesion exitoso!" };
+    }
+
     static async updateUserInfo({ email, fullName, username, biography, password }, userId){
         const user = await supabase.auth.getUser();
         if(user.data.user.email !== email){

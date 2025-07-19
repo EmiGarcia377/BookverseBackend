@@ -15,6 +15,12 @@ export class UserController{
         return res.status(200).json(userLogin);
     };
 
+    static async logoutUser(req, res){
+        const logoutResponse = await UserModel.logoutUser();
+        if(logoutResponse.error !== undefined) return res.status(500).json(logoutResponse);
+        return res.status(200).json(logoutResponse);
+    }
+
     static async updateUserInfo(req, res){
         const userInfo = req.body;
         const userId = req.params.userId;
