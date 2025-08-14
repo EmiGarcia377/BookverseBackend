@@ -39,9 +39,10 @@ export class UserModel {
         if(error) return { message: "Ocurrio un error al iniciar sesion, intente de nuevo por favor", error: error.message };
 
         if(data.user.user_metadata.firstTime){
-            await supabase.from('users').insert([
+            await supabase.from('users').insert(
             { id: data.user.id, email: data.user.email, username: data.user.user_metadata.username, full_name: data.user.user_metadata.fullName }
-            ]);
+            );
+            await supabase.auth.updateUser({ data: { firstTime: false }});
         }
         return {
             message: 'Sesion iniciada con exito!',

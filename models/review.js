@@ -45,6 +45,14 @@ export class ReviewModel {
         return { reviews: data };
     }
 
+    static async getLikedReviews(userId){
+        const { data, error } = await supabase.rpc('get_liked_reviews_by_user', { current_user_id: userId });
+
+        if(error) return { message: "Ocurrio un error al obtener las reseñas, por favor intente de nuevo mas tarde", error: error.message };
+
+        return { reviews: data };
+    }
+
     static async getUserDashboard(userId){
         const { data: savedData, error: savedError } = await supabase.rpc('get_recent_saved_reviews', { current_user_id: userId });
         const { data, error } = await supabase.rpc('get_recent_reviews_by_current_user',  { current_user_id: userId });

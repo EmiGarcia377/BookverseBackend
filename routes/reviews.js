@@ -15,6 +15,9 @@ reviewsRouter.get('/getUserReviews/:profileId/:userId', ReviewController.getUser
 //Endpoint para obtener las reseñas guardadas por un usuario
 reviewsRouter.get('/getSavedReviews/:userId', ReviewController.getSavedReviews);
 
+//Endpoint para obtener las reseñas likeadas por un usuario
+reviewsRouter.get('/getLikedReviews/:userId', ReviewController.getLikedReviews);
+
 //Endpoint para crear una reseña
 reviewsRouter.post('/create', ReviewController.createReview);
 

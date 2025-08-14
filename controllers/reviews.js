@@ -29,12 +29,19 @@ export class ReviewController{
         return res.status(200).json(savedReviews);
     };
 
+    static async getLikedReviews(req, res){
+        const userId = req.params.userId;
+        const likedReviews = await ReviewModel.getLikedReviews(userId);
+        if(likedReviews.error !== undefined) return res.status(500).json(likedReviews);
+        return res.status(200).json(likedReviews);
+    }
+
     static async getUserDashboard(req, res){
         const userId = req.params.userId;
         const userDashboard = await ReviewModel.getUserDashboard(userId);
         if(userDashboard.error !== undefined) return res.status(500).json(userDashboard);
         return res.status(200).json(userDashboard);
-    }
+    };
 
     static async createReview(req, res){
         const review = req.body;

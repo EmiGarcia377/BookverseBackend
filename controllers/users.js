@@ -34,7 +34,7 @@ export class UserController{
         const file = req.file;
         if (!file) return res.status(400).json({ message: 'No se proporcionó ninguna imagen.' });
         const result = await UserModel.updatePfp(file, userId);
-        if(result.error != undefined) return res.status(500).json(result);
+        if(result.error !== undefined) return res.status(500).json(result);
         return res.status(201).json(result);
     }
 

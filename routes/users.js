@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers/users.js";
-import { uploadSingle } from '../middleware/multer.js'
+import { uploadSingleAvatars } from '../middleware/multer.js'
 
 export const usersRouter = Router();
 
@@ -16,7 +16,8 @@ usersRouter.post('/logout', UserController.logoutUser);
 //Endpoint para actualizar los datos de un usuario
 usersRouter.put('/updateUser/:userId', UserController.updateUserInfo);
 
-usersRouter.post('/updatepfp/:userId', uploadSingle,  UserController.updatePfp);
+//Endpoint para actualizar la foto de perfil de un usuario
+usersRouter.post('/updatepfp/:userId', uploadSingleAvatars,  UserController.updatePfp);
 
 //Endpoint para obtener datos del usuario
 usersRouter.get('/getUser', UserController.getUser);
