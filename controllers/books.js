@@ -19,6 +19,14 @@ export class BookController{
         return res.status(201).json(dbResponse);
     };
 
+    static async addBookToLib(req, res){
+        const bookId = req.params.bookId;
+        const libraryId = req.body.libraryId;
+        const dbResponse = await BookModel.addBookToLib(bookId, libraryId);
+        if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
+        return res.status(201).json(dbResponse);
+    }
+
     static async createLib(req, res){
         const userId = req.params.userId;
         const library = req.body;
@@ -44,6 +52,14 @@ export class BookController{
         return res.status(200).json(pageUpdate);
     };
 
+    static async updateBookSummary(req, res){
+        const bookId = req.params.bookId;
+        const summary = req.body.summary;
+        const dbResponse = await BookModel.updateBookSummary(bookId, summary);
+        if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
+        return res.status(204).json(dbResponse);
+    }
+
     static async getAllUserBooks(req, res){
         const userId = req.params.userId;
         const books = await BookModel.getAllUserBooks(userId);
@@ -65,10 +81,31 @@ export class BookController{
         return res.status(200).json(customLibraries);
     };
 
+    static async getBookLibraries(req, res){
+        const bookId = req.params.bookId;
+        const libraries = await BookModel.getBookLibraries(bookId);
+        if(libraries.error !== undefined) return res.status(500).json(libraries);
+        return res.status(200).json(libraries);
+    };
+
     static async getUserLibraries(req, res){
         const userId = req.params.userId;
         const libraries = await BookModel.getUserLibraries(userId);
         if(libraries.error !== undefined) return res.status(500).json(libraries);
         return res.status(200).json(libraries);
+    };
+
+    static async getLibwBooks(req, res){
+        const userId = req.params.userId;
+        const customLibs = await BookModel.getLibwBooks(userId);
+        if(customLibs.error !== undefined) return res.status(500).json(customLibs);
+        return res.status(200).json(customLibs);
+    };
+
+    static async getBookSummary(req, res){
+        const bookId = req.params.bookId;
+        const bookSummary = await BookModel.getBookSummary(bookId);
+        if(bookSummary.error !== undefined) return res.status(500).json(bookSummary);
+        return res.status(200).json(bookSummary);
     };
 }

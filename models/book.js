@@ -2,6 +2,7 @@ import path from 'path';
 import { supabase } from '../supabaseClient.js';
 
 export class BookModel {
+    //P O S T
     static async addBook(userId, book, library){
         const { data, error } = await supabase.from('books').insert({
             user_id: userId, 
@@ -13,6 +14,7 @@ export class BookModel {
             categories: book.volumeInfo.categories,
             num_pages: book.volumeInfo.pageCount
         }).select();
+
         if(library != 'All'){
             const { data: libraryData, error: libErr } = await supabase.from('libraries').select('id').eq('user_id', userId).eq('name', library).single();
             const { error: libraryErr } = await supabase.from('library_books').insert({ library_id: libraryData.id, book_id: data[0].id });
@@ -35,6 +37,12 @@ export class BookModel {
                 categories: book.categories,
                 num_pages: book.pages
             }).select();
+
+            if(book.customSelectedLibrary != 'All'){
+                const { data: libraryData, error: libErr } = await supabase.from('libraries').select('id').eq('user_id', userId).eq('name', book.customSelectedLibrary).single();
+                const { error: libraryErr } = await supabase.from('library_books').insert({ library_id: libraryData.id, book_id: data[0].id });
+                if(libraryErr) return { message: "Ocurrio un error al agregar el libro, por favor intenta mas tarde", error: error.message };
+            }
 
             if(error) return { message: "Ocurrio un error al agregar el libro, por favor intenta mas tarde", error: error.message };
 
@@ -60,6 +68,12 @@ export class BookModel {
                 categories: book.categories,
                 num_pages: book.pages
             }).select();
+
+            if(book.customSelectedLibrary != 'All'){
+                const { data: libraryData, error: libErr } = await supabase.from('libraries').select('id').eq('user_id', userId).eq('name', book.customSelectedLibrary).single();
+                const { error: libraryErr } = await supabase.from('library_books').insert({ library_id: libraryData.id, book_id: data[0].id });
+                if(libraryErr) return { message: "Ocurrio un error al agregar el libro, por favor intenta mas tarde", error: error.message };
+            }
             
             if(error) return { message: "Ocurrio un error al agregar el libro, por favor intenta mas tarde", error: error.message };
             
@@ -67,19 +81,44 @@ export class BookModel {
         }
     }
 
+    static async addBookToLib(bookId, libraryId){
+        const { data, error } = await supabase.from('library_books').insert({ library_id: libraryId, book_id: bookId }).select(`
+            libraries(
+                name,
+                abreviation
+            )
+        `).eq('library_id', libraryId).single();
+        const { count, error: countErr } = await supabase.from('library_books').select('*', { count: 'exact', head: true }).eq('library_id', libraryId);
+
+        if(error || countErr) return { message: "Ocurrio un error al agregar el libro a la biblioteca, por favor intente mas tarde", error: error?.message || countErr?.message };
+        const newLibrary = { name: data.libraries.name, abreviation: data.libraries.abreviation, book_count: count}
+        return { library: newLibrary };
+    }
+
     static async createLib(userId, library){
+        let abreviation = '';
+        if(library.name.split(' ').length >= 2){
+            abreviation = library.name.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
+        } else if(library.name.split(' ').length === 1 && library.name.length >= 2){
+            abreviation = library.name.charAt(0).toUpperCase() + library.name.charAt(1).toLowerCase();
+        }
+
         const { data: libName, error: libError } = await supabase.from('libraries').select('name').eq('user_id', userId).eq('name', library.name);
         if(libName.length !== 0) return { nameErr: `Ya tienes una libreria llamada ${libName[0].name}!`}
         const { data, error } = await supabase.from('libraries').insert({
             user_id: userId,
             name: library.name,
-            description: library.description
-        }).select('name, description');
+            description: library.description,
+            library_color: library.color,
+            abreviation: abreviation
+        }).select('name, description, abreviation, library_color');
 
         if(error) return { message: "Ocurrio un error al agregar la libreria, por favor intente mas tarde", error: error.message };
 
         return { message: "Libreria agregada con exito", library: data[0] };
     }
+
+    //P A T C H
 
     static async updateStatus(bookId, newStatus){
 
@@ -95,6 +134,14 @@ export class BookModel {
         if(error) return { message: "Ocurrio un error al actualizar la pagina actual del libro", error: error.message };
         return { message: "Pagina actual actualizada con exito!" };
     }
+
+    static async updateBookSummary(bookId, summary){
+        const { error } = await supabase.from('books').update({ summary }).eq('id', bookId);
+        if(error) return { message: "Ocurrio un error al actualizar la pagina actual del libro", error: error.message };
+        return { message: "Resumen actualizado con exito!" };
+    }   
+
+    //G E T
 
     static async getAllUserBooks(userId){
         const { data, error } = await supabase.from('books').select(`
@@ -170,5 +217,30 @@ export class BookModel {
         if(error) return { message: "Ocurrio un error al obtener las librerias, por favor intenta mas tarde", error: error?.message };
 
         return { libraries: data };
+    }
+
+    static async getBookLibraries(bookId){
+        const { data, error } = await supabase.rpc('get_libraries_for_book', { p_book_id: bookId });
+
+        if(error) return { message: "Ocurrio un error al obtener las librerias del libro, por favor intenta mas tarde", error: error.message };
+
+        return { libraries: data };
+    }
+
+    static async getLibwBooks(userId){
+        const { data, error } = await supabase.rpc('get_user_libraries_with_books', { p_user_id: userId });
+
+        if(error) return { message: "Ocurrio un error al obtener sus librerias personalizadas, por favor intente mas tarde", error: error.message };
+
+        
+        return { data };
+    }
+
+    static async getBookSummary(bookId){
+        const { data, error } = await supabase.from('books').select('summary').eq('id', bookId);
+
+        if(error) return { message: "Ocurrio un error al obtener el resumen de este libro, por favor intente mas tarde", error: error.message };
+        
+        return { summary: data[0].summary };
     }
 }
