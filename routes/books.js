@@ -45,3 +45,6 @@ booksRouter.get('/getLibsWBooks/:userId', BookController.getLibwBooks);
 
 //Endpoint para obtener el resumen del libro de un usuario
 booksRouter.get('/getBookSummary/:bookId', BookController.getBookSummary);
+
+//Endpoint para obtener el titulo y el autor de los libros del usuario
+booksRouter.get('/getBooksWAuthors/:userId', BookController.getBooksWAuthors);

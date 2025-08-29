@@ -108,4 +108,11 @@ export class BookController{
         if(bookSummary.error !== undefined) return res.status(500).json(bookSummary);
         return res.status(200).json(bookSummary);
     };
+
+    static async getBooksWAuthors(req, res){
+        const userId = req.params.userId;
+        const books = await BookModel.getBooksWAuthors(userId);
+        if(books.error !== undefined) return res.status(500).json(books);
+        return res.status(200).json(books);
+    };
 }

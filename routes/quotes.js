@@ -11,3 +11,6 @@ quotesRouter.get('/getQuotes/:bookId', QuotesController.getBookQuotes);
 
 //Endpoint para obtener las citas de la seccion de citas del book tracker de un usuario
 quotesRouter.get('/getQuotesSection/:userId', QuotesController.getQuotesSection);
+
+//Endpoint para obtener las citas de todos los libros de un usuario
+quotesRouter.get('/getAllQuotes/:userId', QuotesController.getAllQuotes);

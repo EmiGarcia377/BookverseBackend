@@ -12,8 +12,7 @@ export class QuotesController{
 
     static async getBookQuotes(req, res){
         const bookId = req.params.bookId;
-        const userId = req.params.userId;
-        const quotes = await QuoteModel.getBookQuotes(bookId, userId);
+        const quotes = await QuoteModel.getBookQuotes(bookId);
         if(quotes.error !== undefined) return res.status(500).json(quotes);
         return res.status(200).json(quotes);
     };
@@ -24,4 +23,11 @@ export class QuotesController{
         if(quotes.error !== undefined) return res.status(500).json(quotes);
         return res.status(200).json(quotes);
     };
+
+    static async getAllQuotes(req, res){
+        const userId = req.params.userId;
+        const booksQuotes = await QuoteModel.getAllQuotes(userId);
+        if(booksQuotes.error !== undefined) return res.status(500).json(booksQuotes);
+        return res.status(200).json(booksQuotes)
+    }
 }

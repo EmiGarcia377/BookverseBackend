@@ -243,4 +243,12 @@ export class BookModel {
         
         return { summary: data[0].summary };
     }
+
+    static async getBooksWAuthors(userId){
+        const { data, error } = await supabase.from('books').select('id, title, authors').eq('user_id', userId);
+
+        if(error) return { message: "Ocurrio un error al obtener los libros de tu book tracker por favor intenta mas tarde", error: error.message };
+
+        return { data };
+    }
 }

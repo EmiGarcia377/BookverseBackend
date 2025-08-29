@@ -9,10 +9,10 @@ export class QuoteModel{
         return { quote: data[0] };
     }
 
-    static async getBookQuotes(bookId, userId){
+    static async getBookQuotes(bookId){
         const { data, error } = await supabase.from('quotes').select(`
             content
-        `);
+        `).eq('book_id', bookId);
 
         if(error) return { message: "Ocurrio un error al obtener las citas, por favor intente mas tarde", error: error.message};
 
@@ -28,5 +28,13 @@ export class QuoteModel{
         if(error) return { message: "Ocurrio un error al obtener las citas por favor intente mas tarde", error: error.message };
 
         return { quotes: data };
+    }
+
+    static async getAllQuotes(userId){
+        const { data, error } = await supabase.rpc('get_user_quotes', { p_user_id: userId });
+
+        if(error) return { message: "Ocurrio un error al obtener todas las citas, por favor intente mas tarde", error: error.message };
+
+        return { data };
     }
 }
