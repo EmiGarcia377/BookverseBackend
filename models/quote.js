@@ -11,7 +11,8 @@ export class QuoteModel{
 
     static async getBookQuotes(bookId){
         const { data, error } = await supabase.from('quotes').select(`
-            content
+            content,
+            id
         `).eq('book_id', bookId);
 
         if(error) return { message: "Ocurrio un error al obtener las citas, por favor intente mas tarde", error: error.message};
@@ -22,6 +23,7 @@ export class QuoteModel{
     static async getQuotesSection(userId){
         const { data, error } = await supabase.from('quotes').select(`
             content,
+            id,
             books(title, authors)    
         `).eq('user_id', userId).limit(3).order('created_at', { ascending: false });
 
@@ -36,5 +38,21 @@ export class QuoteModel{
         if(error) return { message: "Ocurrio un error al obtener todas las citas, por favor intente mas tarde", error: error.message };
 
         return { data };
+    }
+
+    static async updateQuote(userId, quoteId, content){
+        const { data, error } = await supabase.from('quotes').update({ content: content }).eq('id', quoteId).eq('user_id', userId).select('content, id');
+
+        if(error) return { message: "Ocurrio un error al actualizar la cita, por favor intente mas tarde", error: error.message };
+
+        return { updatedQuote: data[0] };
+    }
+
+    static async deleteQuote(userId, quoteId){
+        const { data, error } = await supabase.from('quotes').delete().eq('id', quoteId).eq('user_id', userId);
+
+        if(error) return { message: "Ocurrio un error al eliminar la cita, por favor intente mas tarde", error: error.message };
+
+        return { message: "Cita eliminada correctamente" };
     }
 }

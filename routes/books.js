@@ -25,6 +25,9 @@ booksRouter.patch('/updateActualPage/:bookId', BookController.updateActualPage);
 //Endpoint para actualizar el resumen del libro de un usuario
 booksRouter.patch('/updateBookSummary/:bookId', BookController.updateBookSummary);
 
+//Endpoint para actualizar la informacion de un libro personalizado de un usuario
+booksRouter.put('/updateBook/:bookId', BookController.updateBook);
+
 //Endpoint para obtener los libros del usuario
 booksRouter.get('/getBooks/:userId', BookController.getAllUserBooks);
 
@@ -48,3 +51,9 @@ booksRouter.get('/getBookSummary/:bookId', BookController.getBookSummary);
 
 //Endpoint para obtener el titulo y el autor de los libros del usuario
 booksRouter.get('/getBooksWAuthors/:userId', BookController.getBooksWAuthors);
+
+//Endpoint para obtener los libros de una libraria del usuario
+booksRouter.get('/getLibraryBooks/:userId/:libraryId', BookController.getLibraryBooks);
+
+//Enpoint para eliminar la relacion entre un libro y una libreria personalizada
+booksRouter.delete('/removeBookFromLib/:bookId/:libraryId', BookController.deleteBookFromLib);

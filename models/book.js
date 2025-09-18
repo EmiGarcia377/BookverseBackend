@@ -139,7 +139,20 @@ export class BookModel {
         const { error } = await supabase.from('books').update({ summary }).eq('id', bookId);
         if(error) return { message: "Ocurrio un error al actualizar la pagina actual del libro", error: error.message };
         return { message: "Resumen actualizado con exito!" };
-    }   
+    }
+
+    //P U T
+    static async updateBook(bookId, updatedInfo){
+        const { error } = await supabase.from('books').update({ 
+            title: updatedInfo.title,  
+            authors: updatedInfo.authors,
+            description: updatedInfo.description,
+            categories: updatedInfo.categories,
+            num_pages: updatedInfo.num_pages,
+        }).eq('id', bookId);
+        if(error) return { message: "Ocurrio un error al actualizar la informacion del libro, por favor intente mas tarde", error: error.message };
+        return { message: "Informacion del libro actualizada con exito" };
+    }
 
     //G E T
 
@@ -250,5 +263,21 @@ export class BookModel {
         if(error) return { message: "Ocurrio un error al obtener los libros de tu book tracker por favor intenta mas tarde", error: error.message };
 
         return { data };
+    }
+
+    static async getLibraryBooks(userId, libraryId){
+        const { data, error } = await supabase.from('library_books').select(`
+            books(title, authors, thumbnail_url, description, categories, num_pages)
+        `).eq('books.user_id', userId).eq('library_id', libraryId);
+
+        if(error) return { message: "Ocurrio un error al obtener los libros de esta libreria, por favor intente mas tarde", error: error.message };
+
+        return { books: data };
+    }
+
+    static async deleteBookFromLib(bookId, libId){
+        const { error } = await supabase.from('library_books').delete().eq('book_id', bookId).eq('library_id', libId);
+        if(error) return { message: "Ocurrio un error al eliminar el libro de la libreria, por favor intente mas tarde", error: error.message };
+        return { message: "Libro eliminado de la libreria con exito" };
     }
 }

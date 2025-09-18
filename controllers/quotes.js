@@ -29,5 +29,22 @@ export class QuotesController{
         const booksQuotes = await QuoteModel.getAllQuotes(userId);
         if(booksQuotes.error !== undefined) return res.status(500).json(booksQuotes);
         return res.status(200).json(booksQuotes)
+    };
+
+    static async updateQuote(req, res){
+        const userId = req.params.userId;
+        const quoteId = req.params.quoteId;
+        const content = req.body.content;
+        const updatedQuote = await QuoteModel.updateQuote(userId, quoteId, content);
+        if(updatedQuote.error !== undefined) return res.status(500).json(updatedQuote);
+        return res.status(200).json(updatedQuote)
+    };
+
+    static async deleteQuote(req, res){
+        const userId = req.params.userId;
+        const quoteId = req.params.quoteId;
+        const dbResponse = await QuoteModel.deleteQuote(userId, quoteId);
+        if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
+        return res.status(200).json(dbResponse);
     }
 }

@@ -25,7 +25,7 @@ export class BookController{
         const dbResponse = await BookModel.addBookToLib(bookId, libraryId);
         if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
         return res.status(201).json(dbResponse);
-    }
+    };
 
     static async createLib(req, res){
         const userId = req.params.userId;
@@ -57,8 +57,16 @@ export class BookController{
         const summary = req.body.summary;
         const dbResponse = await BookModel.updateBookSummary(bookId, summary);
         if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
-        return res.status(204).json(dbResponse);
-    }
+        return res.status(204);
+    };
+
+    static async updateBook(req, res){
+        const bookId = req.params.bookId;
+        const updatedInfo = req.body;
+        const dbResponse = await BookModel.updateBook(bookId, updatedInfo);
+        if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
+        return res.status(200).json(dbResponse);
+    };
 
     static async getAllUserBooks(req, res){
         const userId = req.params.userId;
@@ -114,5 +122,21 @@ export class BookController{
         const books = await BookModel.getBooksWAuthors(userId);
         if(books.error !== undefined) return res.status(500).json(books);
         return res.status(200).json(books);
+    };
+
+    static async getLibraryBooks(req, res){
+        const userId = req.params.userId;
+        const libraryId = req.params.libraryId;
+        const books = await BookModel.getLibraryBooks(userId, libraryId);
+        if(books.error !== undefined) return res.status(500).json(books);
+        return res.status(200).json(books);
+    };
+
+    static async deleteBookFromLib(req, res){
+        const bookId = req.params.bookId;
+        const libId = req.params.libraryId;
+        const dbResponse = await BookModel.deleteBookFromLib(bookId, libId);
+        if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
+        return res.status(204);
     };
 }
