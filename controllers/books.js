@@ -68,6 +68,15 @@ export class BookController{
         return res.status(200).json(dbResponse);
     };
 
+    static async updateBookCover(req, res){
+        const userId = req.params.userId;
+        const bookTitle = req.params.bookTitle;
+        const bookCover = req.file;
+        const newUrl = await BookModel.updateBookCover(bookCover, userId, bookTitle);
+        if(newUrl.error !== undefined) return res.status(500).json(newUrl);
+        return res.status(200).json(newUrl);
+    };
+
     static async getAllUserBooks(req, res){
         const userId = req.params.userId;
         const books = await BookModel.getAllUserBooks(userId);
@@ -139,4 +148,12 @@ export class BookController{
         if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
         return res.status(204);
     };
+
+    static async deleteBook(req, res){
+        const bookId = req.params.bookId;
+        const userId = req.params.userId;
+        const dbResponse = await BookModel.deleteBook(bookId, userId);
+        if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
+        return res.status(204);
+    }
 }

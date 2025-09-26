@@ -28,6 +28,9 @@ booksRouter.patch('/updateBookSummary/:bookId', BookController.updateBookSummary
 //Endpoint para actualizar la informacion de un libro personalizado de un usuario
 booksRouter.put('/updateBook/:bookId', BookController.updateBook);
 
+//Endpoint para actualizar el archivo de la portada de un libro personalizado de un usuario
+booksRouter.put('/uploadCover/:userId/:bookTitle', uploadSingleCover, BookController.updateBookCover);
+
 //Endpoint para obtener los libros del usuario
 booksRouter.get('/getBooks/:userId', BookController.getAllUserBooks);
 
@@ -57,3 +60,6 @@ booksRouter.get('/getLibraryBooks/:userId/:libraryId', BookController.getLibrary
 
 //Enpoint para eliminar la relacion entre un libro y una libreria personalizada
 booksRouter.delete('/removeBookFromLib/:bookId/:libraryId', BookController.deleteBookFromLib);
+
+//Endpoint para eliminar un libro del BookTracker del usuario
+booksRouter.delete('/deleteBook/:bookId/:userId', BookController.deleteBook);

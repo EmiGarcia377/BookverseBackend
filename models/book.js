@@ -2,6 +2,7 @@ import path from 'path';
 import { supabase } from '../supabaseClient.js';
 
 export class BookModel {
+
     //P O S T
     static async addBook(userId, book, library){
         const { data, error } = await supabase.from('books').insert({
@@ -154,6 +155,27 @@ export class BookModel {
         return { message: "Informacion del libro actualizada con exito" };
     }
 
+    static async updateBookCover(bookCover, userId, bookTitle){
+        const fileExt = path.extname(bookCover.originalname);
+        const bookTitleSanitized = bookTitle.replace(/[^a-z0-9_\-]/gi, "_");
+        const fileName = `${userId}_${bookTitleSanitized}${fileExt}`;
+        const filePath = `user_${userId}/${fileName}`;
+        console.log(filePath);
+        const { error: uploadError } = await supabase.storage.from('book-covers').upload(filePath, bookCover.buffer, {
+            contentType: bookCover.mimetype,
+            upsert: true
+        });
+
+        if(uploadError) return { message: "Ocurrio un error al subir la portada del libro", error: uploadError.message };
+
+        const { data: publicUrlData } = supabase.storage.from('book-covers').getPublicUrl(filePath);
+        const freshUrl = `${publicUrlData.publicUrl}?t=${Date.now()}`;
+
+        const { error } = await supabase.from("books").update({ thumbnail_url: freshUrl });
+        if(error) return { message: "Ocurrio un error al actualizar la portada en la base de datos, por favor intente de nuevo", error: error.message };
+
+        return { url: freshUrl };
+    }
     //G E T
 
     static async getAllUserBooks(userId){
@@ -274,10 +296,19 @@ export class BookModel {
 
         return { books: data };
     }
+    //D E L E T E
 
     static async deleteBookFromLib(bookId, libId){
         const { error } = await supabase.from('library_books').delete().eq('book_id', bookId).eq('library_id', libId);
         if(error) return { message: "Ocurrio un error al eliminar el libro de la libreria, por favor intente mas tarde", error: error.message };
         return { message: "Libro eliminado de la libreria con exito" };
+    }
+
+    static async deleteBook(bookId, userId){
+        const { error } = await supabase.from('books').delete().eq('id', bookId).eq('user_id', userId);
+
+        if(error) return { message: "Ocurrio un error al eliminar el libro, por favor intente mas tarde", error: error.message };
+        
+        return { message: "Libro eliminado con exito" };
     }
 }

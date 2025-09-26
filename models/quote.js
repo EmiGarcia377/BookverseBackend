@@ -1,8 +1,8 @@
 import { supabase } from "../supabaseClient.js";
 
 export class QuoteModel{
-    static async createQuote(userId, bookId, content){
-        const { data, error } = await supabase.from('quotes').insert({ user_id: userId, book_id: bookId, content: content }).select('content');
+    static async createQuote(userId, bookId, content, quotePage){
+        const { data, error } = await supabase.from('quotes').insert({ user_id: userId, book_id: bookId, content: content, num_page: quotePage }).select('content');
 
         if(error) return { message: "Ocurrio un error al crear la cita, por favor intenta mas tarde", error: error.message };
 
@@ -12,6 +12,7 @@ export class QuoteModel{
     static async getBookQuotes(bookId){
         const { data, error } = await supabase.from('quotes').select(`
             content,
+            num_page,
             id
         `).eq('book_id', bookId);
 
@@ -23,6 +24,7 @@ export class QuoteModel{
     static async getQuotesSection(userId){
         const { data, error } = await supabase.from('quotes').select(`
             content,
+            num_page,
             id,
             books(title, authors)    
         `).eq('user_id', userId).limit(3).order('created_at', { ascending: false });
@@ -40,8 +42,8 @@ export class QuoteModel{
         return { data };
     }
 
-    static async updateQuote(userId, quoteId, content){
-        const { data, error } = await supabase.from('quotes').update({ content: content }).eq('id', quoteId).eq('user_id', userId).select('content, id');
+    static async updateQuote(userId, quoteId, content, quotePage){
+        const { data, error } = await supabase.from('quotes').update({ content: content, num_page: quotePage }).eq('id', quoteId).eq('user_id', userId).select('content, num_page, id');
 
         if(error) return { message: "Ocurrio un error al actualizar la cita, por favor intente mas tarde", error: error.message };
 

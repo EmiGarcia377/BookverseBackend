@@ -5,7 +5,8 @@ export class QuotesController{
         const userId = req.params.userId;
         const bookId = req.params.bookId;
         const content = req.body.content;
-        const dbResponse = await QuoteModel.createQuote(userId, bookId, content);
+        const quotePage = req.body.quotePage;
+        const dbResponse = await QuoteModel.createQuote(userId, bookId, content, quotePage);
         if(dbResponse.error !== undefined) return res.status(500).json(dbResponse);
         return res.status(201).json(dbResponse);
     };
@@ -35,7 +36,8 @@ export class QuotesController{
         const userId = req.params.userId;
         const quoteId = req.params.quoteId;
         const content = req.body.content;
-        const updatedQuote = await QuoteModel.updateQuote(userId, quoteId, content);
+        const quotePage = req.body.quotePage;
+        const updatedQuote = await QuoteModel.updateQuote(userId, quoteId, content, quotePage);
         if(updatedQuote.error !== undefined) return res.status(500).json(updatedQuote);
         return res.status(200).json(updatedQuote)
     };
